@@ -11,6 +11,8 @@
 
 namespace Eluceo\iCal\Domain\ValueObject;
 
+use InvalidArgumentException;
+
 final class TimeSpan extends Occurrence
 {
     private DateTime $begin;
@@ -18,6 +20,14 @@ final class TimeSpan extends Occurrence
 
     public function __construct(DateTime $begin, DateTime $end)
     {
+        if ($end->getDateTime() <= $begin->getDateTime()) {
+            throw new InvalidArgumentException(sprintf(
+                'TimeSpan end (%s) must be later than begin (%s) per RFC 5545 §3.8.2.2.',
+                $end->getDateTime()->format(\DateTimeInterface::ATOM),
+                $begin->getDateTime()->format(\DateTimeInterface::ATOM),
+            ));
+        }
+
         $this->begin = $begin;
         $this->end = $end;
     }
